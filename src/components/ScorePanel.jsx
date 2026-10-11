@@ -51,13 +51,19 @@ export function ScorePanel({
   return (
     <CollapsiblePanel
       title="Score"
+      description="Your progress this session."
+      className="score-panel"
       collapsed={collapsed}
       onToggle={onToggle}
     >
       <>
-        <p role="status" aria-live="polite" aria-atomic="true"><strong>Update:</strong> {status}</p>
-        {!freeplayMode ? <p><strong>Current:</strong> {formatScoreValue(score.earned)} / {formatScoreValue(score.possible)} ({scorePercent}%)</p> : null}
-        {!freeplayMode ? <p><strong>Mistakes:</strong> {score.errors}</p> : null}
+        <p className="session-update" role="status" aria-live="polite" aria-atomic="true"><strong>Update:</strong> {status}</p>
+        {!freeplayMode ? (
+          <div className="score-stats">
+            <p><strong>Current:</strong> <span className="stat-value">{formatScoreValue(score.earned)} <span className="stat-total">/ {formatScoreValue(score.possible)}</span></span> <span className="stat-caption">{scorePercent}% score</span></p>
+            <p><strong>Mistakes:</strong> <span className="stat-value">{score.errors}</span><span className="stat-caption">This session</span></p>
+          </div>
+        ) : null}
         {!freeplayMode && useTimeScoring ? <p><strong>Total Time:</strong> {formatDurationMs(displayedTotalTimedMs)}</p> : null}
         {!randomFenMode && !puzzleMode && !repertoireMode ? (
           <p><strong>Opening:</strong> {currentOpening?.label || '-'}</p>

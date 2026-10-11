@@ -17,7 +17,6 @@ import { useBoardHighlights } from './hooks/useBoardHighlights';
 import { useGameFlow } from './hooks/useGameFlow';
 import { useHistoryControls } from './hooks/useHistoryControls';
 import { useStockfish } from './hooks/useStockfish';
-import { useResponsiveBoardSize } from './hooks/useResponsiveBoardSize';
 import { useScoreHistory } from './hooks/useScoreHistory';
 import {
   COMMON_OPENING_MAX_PLY,
@@ -203,14 +202,11 @@ export default function App() {
     moves: false
   });
 
-  const boardWrapRef = useRef(null);
-  const boardStatusRef = useRef(null);
   const moveListRef = useRef(null);
   const puzzlePoolCacheRef = useRef(new Map());
   const previousMoveHistoryLenRef = useRef(0);
   const currentPuzzlePendingScoreRef = useRef(0);
   const asyncEpochRef = useRef(0);
-  const boardWidth = useResponsiveBoardSize(boardWrapRef, boardStatusRef);
 
   const nextAsyncEpoch = useCallback(() => {
     asyncEpochRef.current += 1;
@@ -718,8 +714,8 @@ export default function App() {
   const darkSquareStyle = useMemo(() => ({ backgroundColor: chessboardTheme.dark }), [chessboardTheme.dark]);
   const dropSquareStyle = useMemo(() => ({ boxShadow: 'inset 0 0 0 6px rgba(255, 255, 255, 0.78)' }), []);
   const boardRenderStyle = useMemo(
-    () => ({ ...chessboardTheme.board, width: `${boardWidth}px`, maxWidth: '100%' }),
-    [chessboardTheme.board, boardWidth]
+    () => ({ ...chessboardTheme.board, width: '100%', maxWidth: '100%' }),
+    [chessboardTheme.board]
   );
   const customPieces = useMemo(() => createCustomPieces(pieceStyle), [pieceStyle]);
 
@@ -1941,6 +1937,31 @@ export default function App() {
 
   return (
     <div className={`app ${darkMode ? 'theme-dark' : 'theme-light'}`}>
+      <header className="app-header">
+        <div className="app-brand">
+          <img className="brand-mark" src="/favicon.svg" width="48" height="48" alt="" />
+          <h1>Chess Trainer</h1>
+        </div>
+        <div className="header-actions">
+          <div className="engine-info">
+            <span className={`engine-status${ready ? ' is-ready' : ''}${error ? ' has-error' : ''}`} role="status">
+              <span className="engine-status-dot" aria-hidden="true" />
+              {error ? 'Engine unavailable' : ready ? 'Engine ready' : 'Preparing engine'}
+            </span>
+            <span className="engine-credit">Powered by Stockfish 18</span>
+          </div>
+          <button
+            type="button"
+            className="secondary display-settings-button"
+            onClick={() => setShowDisplaySettingsModal(true)}
+            aria-label="Open display settings"
+            title="Display Settings"
+          >
+            <FontAwesomeIcon icon={faGear} />
+            <span>Appearance</span>
+          </button>
+        </div>
+      </header>
       <div className="status-stack">
         {!isPwaInstalled && installPromptEvent && !installNoticeDismissed ? (
           <div className="app-notice" role="status" aria-live="polite" aria-atomic="true">
@@ -1976,9 +1997,11 @@ export default function App() {
             </button>
           </div>
         ) : null}
-        <div className="board-status" ref={boardStatusRef}>
+        <div className="board-status">
         <div className="board-head">
-          <div className="board-title">Chess Trainer</div>
+          <div className="board-heading">
+            <h2 className="board-title">{({ classic: 'Classic training', 'random-fen': 'Random positions', repertoire: 'Opening practice', puzzle: 'Puzzle practice', freeplay: 'Freeplay' })[gameMode]}</h2>
+          </div>
           <div className="board-actions">
             {isGameStarted && !randomFenMode && !puzzleMode && !repertoireMode ? (
               <button
@@ -2014,15 +2037,6 @@ export default function App() {
                 />
               </label>
             ) : null}
-            <button
-              type="button"
-              className="secondary board-icon-button"
-              onClick={() => setShowDisplaySettingsModal(true)}
-              aria-label="Open display settings"
-              title="Display Settings"
-            >
-              <FontAwesomeIcon icon={faGear} />
-            </button>
           </div>
         </div>
         <div className="turn-line" role="status" aria-live="polite" aria-atomic="true">
@@ -2111,7 +2125,7 @@ export default function App() {
         </div>
       ) : null}
 
-      <main className="board-wrap" ref={boardWrapRef}>
+      <main className="board-wrap" aria-label="Chessboard">
         <div className="board-area" onContextMenu={(e) => e.preventDefault()}>
           <Chessboard options={chessboardOptions} />
           {pendingPromotion ? (
@@ -2201,11 +2215,11 @@ export default function App() {
         </aside>
       )}
 
-      <div className="left-column">
+      <aside className="training-sidebar" aria-label="Training controls and progress">
         <SettingsPanel {...settingsPanelProps} />
         <ScorePanel {...scorePanelProps} />
-        <MoveListPanel {...moveListPanelProps} />
-      </div>
+      </aside>
+      <MoveListPanel {...moveListPanelProps} />
     </div>
   );
 }

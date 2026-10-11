@@ -108,16 +108,17 @@ export function MoveListPanel({
   return (
     <CollapsiblePanel
       title="Move List"
+      className="moves-panel"
       collapsed={collapsed}
       onToggle={onToggle}
       headerActions={moveHeaderActions}
     >
       <>
         <p className="sr-only">Keyboard shortcuts: Left and Right arrows step through moves. Up jumps to first, Down jumps to latest.</p>
-        <p className="move-review-note" role="status" aria-live="polite" aria-atomic="true">
+        <p className={`move-review-note${moveHistory.length ? '' : ' empty-moves'}`} role="status" aria-live="polite" aria-atomic="true">
           {moveHistory.length
             ? `Viewing ply ${clampedViewedPly}/${moveHistory.length}${viewingHistory ? ' (review mode: moves locked)' : ''}`
-            : 'No moves yet.'}
+            : 'No moves yet. Your game will unfold here.'}
         </p>
         {moveRows.length ? (
           <div className="move-list" ref={moveListRef}>

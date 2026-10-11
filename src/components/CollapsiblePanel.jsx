@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 export function CollapsiblePanel({
   title,
@@ -8,15 +8,20 @@ export function CollapsiblePanel({
   onToggle,
   children,
   as = 'section',
-  headerActions = null
+  headerActions = null,
+  className = '',
+  description = null
 }) {
   const RootTag = as;
   const panelBodyId = useId();
 
   return (
-    <RootTag className={`panel${collapsed ? ' is-collapsed' : ''}`}>
+    <RootTag className={`panel ${className}${collapsed ? ' is-collapsed' : ''}`}>
       <div className="panel-head">
-        <h2 className="panel-title">{title}</h2>
+        <div className="panel-heading">
+          <h2 className="panel-title">{title}</h2>
+          {description ? <p className="panel-description">{description}</p> : null}
+        </div>
         {headerActions ? <div className="panel-head-actions">{headerActions}</div> : null}
         <button
           type="button"
@@ -26,10 +31,10 @@ export function CollapsiblePanel({
           aria-label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
           aria-controls={panelBodyId}
         >
-          <FontAwesomeIcon icon={collapsed ? faEye : faEyeSlash} />
+          <FontAwesomeIcon icon={collapsed ? faChevronDown : faChevronUp} />
         </button>
       </div>
-      <div id={panelBodyId} hidden={collapsed}>
+      <div className="panel-body" id={panelBodyId} hidden={collapsed}>
         {!collapsed ? children : null}
       </div>
     </RootTag>

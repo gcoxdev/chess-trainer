@@ -43,13 +43,14 @@ export function SettingsPanel({
 }) {
   return (
     <CollapsiblePanel
-      as="header"
       title="Settings"
+      description="Set up your next session."
+      className="settings-panel"
       collapsed={collapsed}
       onToggle={onToggle}
     >
       <div className="controls">
-        <label>
+        <label className="control-wide">
           Game Mode
           <select value={gameMode} disabled={settingsLocked} onChange={(e) => setGameMode(e.target.value)}>
             <option value="classic">Classic</option>
@@ -76,7 +77,7 @@ export function SettingsPanel({
           </label>
         ) : repertoireMode ? (
           <>
-            <label>
+            <label className="control-wide">
               Opening Line Set
               <select
                 value={repertoireOpening}
@@ -89,7 +90,7 @@ export function SettingsPanel({
                 ))}
               </select>
             </label>
-            <label>
+            <label className="control-wide">
               Opening Side
               <select
                 value={repertoireSide}
@@ -103,7 +104,7 @@ export function SettingsPanel({
             </label>
           </>
         ) : puzzleMode ? (
-          <label>
+          <label className="control-wide">
             Puzzle Theme
             <select
               value={puzzleTheme}
@@ -117,7 +118,7 @@ export function SettingsPanel({
             </select>
           </label>
         ) : (
-          <label>
+          <label className="control-wide">
             Skill Level
             <select
               value={engineSkillLevel}
@@ -147,30 +148,6 @@ export function SettingsPanel({
           </label>
         ) : null}
 
-        {!randomFenMode && !freeplayMode && !puzzleMode && !repertoireMode ? (
-          <label>
-            Allow Common Openings
-            <input
-              type="checkbox"
-              checked={allowCommonOpenings}
-              disabled={settingsLocked}
-              onChange={(e) => setAllowCommonOpenings(e.target.checked)}
-            />
-          </label>
-        ) : null}
-
-        {freeplayMode ? (
-          <label>
-            Analyze Moves
-            <input
-              type="checkbox"
-              checked={freeplayAnalyzeMoves}
-              disabled={settingsLocked}
-              onChange={(e) => setFreeplayAnalyzeMoves(e.target.checked)}
-            />
-          </label>
-        ) : null}
-
         {!puzzleMode && !repertoireMode ? (
           <label>
             Play As
@@ -182,9 +159,33 @@ export function SettingsPanel({
           </label>
         ) : null}
 
+        {!randomFenMode && !freeplayMode && !puzzleMode && !repertoireMode ? (
+          <label className="checkbox-control">
+            <span>Allow Common Openings</span>
+            <input
+              type="checkbox"
+              checked={allowCommonOpenings}
+              disabled={settingsLocked}
+              onChange={(e) => setAllowCommonOpenings(e.target.checked)}
+            />
+          </label>
+        ) : null}
+
+        {freeplayMode ? (
+          <label className="checkbox-control">
+            <span>Analyze Moves</span>
+            <input
+              type="checkbox"
+              checked={freeplayAnalyzeMoves}
+              disabled={settingsLocked}
+              onChange={(e) => setFreeplayAnalyzeMoves(e.target.checked)}
+            />
+          </label>
+        ) : null}
+
         {!freeplayMode && !repertoireMode ? (
-          <label>
-            Time-Based Scoring
+          <label className="checkbox-control">
+            <span>Time-Based Scoring</span>
             <input
               type="checkbox"
               checked={useTimeScoring}
@@ -194,13 +195,16 @@ export function SettingsPanel({
           </label>
         ) : null}
 
-        {!isGameStarted ? (
-          <button className="success-button" onClick={startGame} type="button" disabled={!ready || isProcessing}>
-            Start Game
-          </button>
-        ) : (
-          <button className="danger-button" onClick={resetToSetup} type="button">End Game</button>
-        )}
+        <div className="session-action">
+          {!isGameStarted ? (
+            <button className="success-button" onClick={startGame} type="button" disabled={!ready || isProcessing}>
+              Start Game
+            </button>
+          ) : (
+            <button className="danger-button" onClick={resetToSetup} type="button">End Game</button>
+          )}
+          {!isGameStarted && !ready ? <p className="session-note">Getting the engine ready…</p> : null}
+        </div>
       </div>
     </CollapsiblePanel>
   );
