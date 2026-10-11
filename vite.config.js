@@ -17,7 +17,9 @@ export default defineConfig({
           if (id.includes('react-chessboard') || id.includes('chess.js') || id.includes('stockfish')) {
             return 'chess-vendor';
           }
-          if (id.includes('/react/') || id.includes('/react-dom/')) {
+          // React DOM imports scheduler; keep them together to avoid a
+          // vendor -> react-vendor -> vendor cycle during initialization.
+          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/scheduler/')) {
             return 'react-vendor';
           }
           return 'vendor';
